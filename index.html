@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Images 2.6 常见失败与修复 / Failures &amp; fixes</title>
+<meta name="description" content="Images 2.6 failures &amp; fixes — blurry text, non-vector SVG, GIF jump frames"/>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-serif;max-width:820px;margin:32px auto;padding:0 16px;line-height:1.75;color:#1a1a1a;background:#fff}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid #eee}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:0.95em}
+th,td{border:1px solid #ddd;padding:8px;text-align:left;vertical-align:top}
+code{background:#f4f4f4;padding:2px 6px;border-radius:4px;font-size:0.92em}
+pre{background:#f6f8fa;padding:12px 14px;border-radius:8px;overflow:auto;white-space:pre-wrap}
+pre code{background:transparent;padding:0}
+blockquote{border-left:4px solid #14956b;margin:12px 0;padding:4px 12px;color:#444;background:#f7fbf9}
+h1,h2,h3{line-height:1.35}
+em{color:#666;font-size:0.92em}
+a{color:#0b57d0;word-break:break-all}
+hr{border:none;border-top:1px solid #e5e5e5;margin:28px 0}
+footer{margin:48px 0 24px;color:#888;font-size:13px}
+</style>
+</head>
+<body>
+<h1>Images 2.6 常见失败与修复 / Failures &amp; fixes</h1>
+<p>非官方踩坑笔记：症状 → 改提示 → 重试。先干净重试，再换型号。</p>
+<p>Symptom → prompt fix → retry. Switch variant only after a clean retry.</p>
+<blockquote>
+<p><strong>Attribution / 来源说明</strong><br />
+案例图与提示词来自 <a href="https://github.com/xianyu110/awesome-gpt-images-2.6">https://github.com/xianyu110/awesome-gpt-images-2.6</a>（及 OpenAI 文档 / 公告示例；OpenArt 处已标注）。本仓库为非官方学习笔记，不编造提示词或假 GIF。图片经 awesome Pages CDN 热链（<code>…/awesome-gpt-images-2.6/images/&lt;file&gt;</code>）</p>
+</blockquote>
+<p><strong>Models:</strong> <code>gpt-image-2.6-flare</code> · <code>gpt-image-2.6-sunburst</code></p>
+<hr />
+<h2>中文</h2>
+<h3>1. 文字发糊或出错</h3>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>改提示</th>
+<th>重试 / 换型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>标语拼错</td>
+<td>引号包住精确字符串；写明 EXACT / verbatim</td>
+<td>Sunburst + 更高 quality；缩短文案</td>
+</tr>
+<tr>
+<td>文字出现两次 / 水印垃圾</td>
+<td>“只出现一次… No watermarks, no logos”</td>
+<td>先同型号；再 Flare→Sunburst</td>
+</tr>
+<tr>
+<td>图注过小</td>
+<td>“Avoid tiny text… easy-to-read”</td>
+<td>加大尺寸；减少标签数量</td>
+</tr>
+</tbody>
+</table>
+<p>核实文字向参考：Thread 广告（awesome #5）、节日贺卡（awesome #13）、广告牌（awesome #24）。</p>
+<p><img alt="Thread ad" src="https://xianyu110.github.io/awesome-gpt-images-2.6/images/thread-ad-gpt-image-2-6-sunburst.webp" /></p>
+<p><em>精确文案 · awesome #5</em></p>
+<p><img alt="Billboard" src="https://xianyu110.github.io/awesome-gpt-images-2.6/images/billboard-gpt-image-2-6-sunburst.webp" /></p>
+<p><em>广告牌文字 · awesome #24</em></p>
+<p>Thread 提示词（#5）：</p>
+<pre><code>Give me a cool in culture ad / fashion shot for a brand called Thread.
+It's a hip young street brand. The ad shows a group of friends hanging out together with the tagline &quot;Yours to Create.&quot;
+Make it feel like a polished campaign image for a youth streetwear audience: stylish, contemporary, energetic, and tasteful.
+Use clean composition, strong color direction, natural poses, and premium fashion photography cues.
+Render the tagline exactly once, clearly and legibly, integrated into the ad layout.
+No extra text, no watermarks, no unrelated logos.
+</code></pre>
+<p>广告牌提示词（#24）：</p>
+<pre><code>Create a realistic billboard mockup of the shampoo on a highway scene during sunset.
+Billboard text (EXACT, verbatim, no extra characters):
+&quot;Fresh and clean&quot;
+Typography: bold sans-serif, high contrast, centered, clean kerning.
+Ensure text appears once and is perfectly legible.
+No watermarks, no logos.
+</code></pre>
+<h3>2. 所谓 SVG 看起来不像矢量</h3>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>改提示</th>
+<th>重试 / 换型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>柔和光影 / 照片纹理</td>
+<td>强调 flat / minimal strokes / no gradients / vector-like</td>
+<td>确认 <code>output_format=svg</code>；试 Sunburst</td>
+</tr>
+<tr>
+<td>不透明底 / 棋盘格</td>
+<td>“Fully transparent… no checkerboard”</td>
+<td>重新生成；不要指望编辑出 SVG</td>
+</tr>
+<tr>
+<td>小尺寸发糊细节过多</td>
+<td>“Favor simplicity… strong silhouette”</td>
+<td>减装饰；Flare 草稿 → Sunburst 定稿</td>
+</tr>
+</tbody>
+</table>
+<p>目标观感参考（awesome #6）：</p>
+<p><img alt="Flare SVG" src="https://xianyu110.github.io/awesome-gpt-images-2.6/images/field-and-flour-gpt-image-2-6-flare.svg" /></p>
+<p><em>Target look · #6</em></p>
+<p><img alt="Sunburst SVG" src="https://xianyu110.github.io/awesome-gpt-images-2.6/images/field-and-flour-gpt-image-2-6-sunburst.svg" /></p>
+<p><em>Target look · #6</em></p>
+<h3>3. GIF 跳帧 / 闪烁</h3>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>改提示</th>
+<th>重试 / 换型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>循环接缝爆一下</td>
+<td>写明末帧平滑接回首帧</td>
+<td>先改姿势闭环</td>
+</tr>
+<tr>
+<td>像相机在抖</td>
+<td>“Keep the camera still”</td>
+<td>减小动作幅度</td>
+</tr>
+<tr>
+<td>身份闪烁</td>
+<td>每次重试重申服装/背景/比例</td>
+<td>Flare 不稳就换 Sunburst</td>
+</tr>
+</tbody>
+</table>
+<p>稳定循环参考（awesome #2）：</p>
+<p><img alt="Monkey GIF" src="https://xianyu110.github.io/awesome-gpt-images-2.6/images/monkey-lantern-gpt-image-2-6-sunburst.gif" /></p>
+<p><em>稳定循环参考 #2</em></p>
+<h3>何时换型号</h3>
+<ul>
+<li><strong>Flare → Sunburst：</strong> 重文字、密版式、多轮身份、「已经接近」的稿。</li>
+<li><strong>Sunburst → Flare：</strong> 构图探索、更在意时延。</li>
+<li><strong>同时调：</strong> 先动 <code>quality</code> / <code>complexity</code>，别只怪型号名。</li>
+</ul>
+<hr />
+<h2>English</h2>
+<h3>1. Blurry or wrong text</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix prompt</th>
+<th>Retry / switch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Misspelled slogan</td>
+<td>Quote exact string once; “EXACT, verbatim, no extra characters”</td>
+<td>Retry Sunburst + higher quality; shorten copy</td>
+</tr>
+<tr>
+<td>Text twice / watermark junk</td>
+<td>“Ensure text appears once… No watermarks, no logos”</td>
+<td>Same model first; then Flare→Sunburst</td>
+</tr>
+<tr>
+<td>Tiny diagram labels</td>
+<td>“Avoid tiny text… easy-to-read labels”</td>
+<td>Raise size; reduce label count</td>
+</tr>
+</tbody>
+</table>
+<p>Verified text-heavy references: Thread ad (#5), holiday card (#13), billboard (#24) — images and prompts above.</p>
+<h3>2. “SVG” that looks non-vector</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix prompt</th>
+<th>Retry / switch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Soft shading / photo texture</td>
+<td>Force “flat design, minimal strokes, no gradients unless essential, vector-like shapes”</td>
+<td>Confirm <code>output_format=svg</code>; try Sunburst</td>
+</tr>
+<tr>
+<td>Opaque backdrop / checkerboard</td>
+<td>“Fully transparent background… no solid backdrop, scenery, checkerboard”</td>
+<td>Regenerate; don’t edit-to-SVG</td>
+</tr>
+<tr>
+<td>Busy detail at small size</td>
+<td>“Favor simplicity over detail… strong silhouette”</td>
+<td>Fewer ornaments; Flare draft → Sunburst final</td>
+</tr>
+</tbody>
+</table>
+<h3>3. GIF jump frames / flicker</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix prompt</th>
+<th>Retry / switch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Seam pop</td>
+<td>“sixth frame transitions smoothly toward the first” / “loop smoothly”</td>
+<td>Keep frame_count; fix pose closure</td>
+</tr>
+<tr>
+<td>Camera shake feel</td>
+<td>“Keep the camera still”</td>
+<td>Reduce motion amplitude</td>
+</tr>
+<tr>
+<td>Identity flicker</td>
+<td>Restate outfit, background, proportions every retry</td>
+<td>Sunburst if Flare drifts</td>
+</tr>
+</tbody>
+</table>
+<h3>When to switch variant</h3>
+<ul>
+<li><strong>Flare → Sunburst:</strong> text, dense layout, multi-turn identity, “almost right” drafts.</li>
+<li><strong>Sunburst → Flare:</strong> exploring many compositions; latency matters more than polish.</li>
+<li><strong>Also tune:</strong> <code>quality</code> and <code>complexity</code> before blaming the model name.</li>
+</ul>
+<hr />
+<h2>相关入口 / Related（软链接）</h2>
+<p>How-to 正文为主；渠道放页脚，不做硬推：</p>
+<ol>
+<li>ChatGPT Plus 镜像：<a href="https://trygpt.asia/">trygpt.asia</a></li>
+<li>Codex / Claude Code：<a href="https://momoai.asia/">momoai.asia</a></li>
+<li>API 中转：<a href="https://tryallapi.com/?aff=5A6A">tryallapi.com</a>（aff=5A6A）</li>
+<li>官方充值：<a href="https://chongzhi.trygpt.asia/">chongzhi.trygpt.asia</a></li>
+<li>多模型对话：<a href="https://trymodel.chat/">trymodel.chat</a></li>
+<li>店铺：<a href="https://wzyp.cn/shop/maynorai">wzyp.cn/shop/maynorai</a></li>
+</ol>
+<p>模型页：<a href="https://gptimage2.asia/models/gpt-images-2.6">gptimage2.asia/models/gpt-images-2.6</a></p>
+<p>案例来源：<a href="https://github.com/xianyu110/awesome-gpt-images-2.6">xianyu110/awesome-gpt-images-2.6</a> · <a href="https://xianyu110.github.io/awesome-gpt-images-2.6/">Pages 画廊</a></p>
+<p>合集站（可选）：<a href="https://github.com/Maynor996/images-2-6-svg-gif-guide">images-2-6-svg-gif-guide</a> · <a href="https://maynor996.github.io/images-2-6-svg-gif-guide/">Pages</a></p>
+<p>本页 Pages：<a href="https://maynor996.github.io/images-2-6-failures/">https://maynor996.github.io/images-2-6-failures/</a></p>
+<footer>Unofficial Images 2.6 tutorial · cases from <a href="https://github.com/xianyu110/awesome-gpt-images-2.6">awesome-gpt-images-2.6</a> · models <code>gpt-image-2.6-flare</code> · <code>gpt-image-2.6-sunburst</code></footer>
+</body>
+</html>

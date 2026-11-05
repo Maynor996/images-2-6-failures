@@ -1,0 +1,5 @@
+Example media hotlinked/mirrored from https://github.com/xianyu110/awesome-gpt-images-2.6
+Pages: https://xianyu110.github.io/awesome-gpt-images-2.6/
+Original examples attributed to OpenAI documentation / announcement (and OpenArt where noted).
+For learning / indexing only.
+Cases used: #5, #13, #24, #6, #2
